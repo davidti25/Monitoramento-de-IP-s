@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - IPAM TEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #0f172a;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container {
+            padding: 24px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #475569;
+        }
+        .card p {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        .panel {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 14px;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h2>Dashboard IPAM TEN</h2>
+    <div>
+        Olá, {{ request.user.username }} |
+        <a href="{% url 'logout' %}">Sair</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="cards">
+        <div class="card"><h3>Total de IPs</h3><p>{{ total_ips }}</p></div>
+        <div class="card"><h3>Alocados</h3><p>{{ total_alocados }}</p></div>
+        <div class="card"><h3>Disponíveis</h3><p>{{ total_disponiveis }}</p></div>
+        <div class="card"><h3>Bloqueados</h3><p>{{ total_bloqueados }}</p></div>
+        <div class="card"><h3>Com problema</h3><p>{{ total_problema }}</p></div>
+        <div class="card"><h3>Reservados</h3><p>{{ total_reservado }}</p></div>
+        <div class="card"><h3>Inconsistentes</h3><p>{{ total_inconsistente }}</p></div>
+    </div>
+
+    <div class="grid">
+        <div class="panel">
+            <h3>Status dos IPs</h3>
+            <canvas id="statusChart"></canvas>
+        </div>
+
+        <div class="panel">
+            <h3>Últimas alterações</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ação</th>
+                        <th>Entidade</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ultimas_alteracoes %}
+                    <tr>
+                        <td>{{ item.get_acao_display }}</td>
+                        <td>{{ item.entidade }}</td>
+                        <td>{{ item.criado_em|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">Nenhuma alteração registrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const statusData = {{ status_data|safe }};
+    const labels = statusData.map(item => item.status);
+    const totals = statusData.map(item => item.total);
+
+    new Chart(document.getElementById("statusChart"), {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: totals
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
