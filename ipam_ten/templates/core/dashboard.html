@@ -9,9 +9,10 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f8fafc;
+            background: #0b1220;
             margin: 0;
             padding: 0;
+            color: #f8fafc;
         }
 
         header {
@@ -21,6 +22,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .container {
@@ -35,22 +37,132 @@
         }
 
         .card {
-            background: white;
+            background: #111827;
             border-radius: 14px;
             padding: 18px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
         }
 
         .card h3 {
             margin: 0 0 8px 0;
             font-size: 14px;
-            color: #475569;
+            color: #94a3b8;
         }
 
         .card p {
             margin: 0;
             font-size: 28px;
             font-weight: bold;
+            color: #f8fafc;
+        }
+
+        .section-title {
+            margin: 28px 0 14px;
+            font-size: 20px;
+            color: #f8fafc;
+        }
+
+        .pizza-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .pizza-card {
+            background: #111827;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        .pizza-header h3 {
+            margin: 0 0 6px 0;
+            font-size: 18px;
+            color: #f8fafc;
+        }
+
+        .pizza-meta {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .pizza-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .pizza-stat {
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        .pizza-stat span {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .pizza-stat strong {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .pizza-total {
+            background: #1e293b;
+        }
+
+        .pizza-total span,
+        .pizza-total strong {
+            color: #f8fafc;
+        }
+
+        .pizza-disponiveis {
+            background: #dcfce7;
+        }
+
+        .pizza-disponiveis span,
+        .pizza-disponiveis strong {
+            color: #166534;
+        }
+
+        .pizza-alocados {
+            background: #fef3c7;
+        }
+
+        .pizza-alocados span,
+        .pizza-alocados strong {
+            color: #92400e;
+        }
+
+        .pizza-bloqueados {
+            background: #fee2e2;
+        }
+
+        .pizza-bloqueados span,
+        .pizza-bloqueados strong {
+            color: #991b1b;
+        }
+
+        .pizza-problema {
+            background: #fed7aa;
+        }
+
+        .pizza-problema span,
+        .pizza-problema strong {
+            color: #c2410c;
+        }
+
+        .pizza-reservados {
+            background: #dbeafe;
+        }
+
+        .pizza-reservados span,
+        .pizza-reservados strong {
+            color: #1d4ed8;
         }
 
         .grid {
@@ -60,28 +172,10 @@
         }
 
         .panel {
-            background: white;
+            background: #111827;
             border-radius: 14px;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        a {
-            color: white;
-            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
         }
 
         .chart-panel {
@@ -93,27 +187,84 @@
 
         .chart-box {
             width: 100%;
-            max-width: 320px;
+            max-width: 420px;
             margin: 20px auto 0;
+            aspect-ratio: 1 / 1;
+        }
+
+        .pizza-chart-box {
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto 18px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .chart-box canvas,
+        .pizza-chart-box canvas {
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .chart-title {
             margin: 0;
             font-size: 18px;
-            color: #0f172a;
+            color: #f8fafc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: left;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        th {
+            color: #94a3b8;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logout-link {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+            padding: 0;
+            margin: 0;
         }
     </style>
 </head>
 
 <body>
     <header>
-        <h2>Dashboard IPAM TEN</h2>
+        <h2>LocalizIP's TEN</h2>
         <div>
             <a href="{% url 'ip_list' %}">IPs</a>
             |
             Olá, {{ request.user.username }}
             |
-            <a href="{% url 'logout' %}">Sair</a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0; padding:0;">
+                {% csrf_token %}
+                <button type="submit" class="logout-link">Sair</button>
+            </form>
         </div>
     </header>
 
@@ -147,6 +298,61 @@
                 <h3>Inconsistentes</h3>
                 <p>{{ total_inconsistente }}</p>
             </div>
+        </div>
+
+        <h3 class="section-title">Resumo por grupo</h3>
+
+        <div class="pizza-grid">
+            {% for grupo in grupos_dashboard %}
+            <div class="pizza-card">
+                <div class="pizza-header">
+                    <h3>{{ grupo.titulo }}</h3>
+                    <div class="pizza-meta">
+                        Tipo: {{ grupo.tipo }} | Cidade: {{ grupo.cidade }} | Faixa: {{ grupo.faixa }}
+                    </div>
+                </div>
+
+                <div class="pizza-chart-box">
+                    <canvas id="groupChart{{ forloop.counter }}" class="group-doughnut"
+                        data-disponiveis="{{ grupo.disponiveis }}" data-alocados="{{ grupo.alocados }}"
+                        data-bloqueados="{{ grupo.bloqueados }}" data-problema="{{ grupo.problema }}"
+                        data-reservados="{{ grupo.reservados }}">
+                    </canvas>
+                </div>
+
+                <div class="pizza-stats">
+                    <div class="pizza-stat pizza-total">
+                        <span>Total</span>
+                        <strong>{{ grupo.total }}</strong>
+                    </div>
+
+                    <div class="pizza-stat pizza-disponiveis">
+                        <span>Disponíveis</span>
+                        <strong>{{ grupo.disponiveis }}</strong>
+                    </div>
+
+                    <div class="pizza-stat pizza-alocados">
+                        <span>Alocados</span>
+                        <strong>{{ grupo.alocados }}</strong>
+                    </div>
+
+                    <div class="pizza-stat pizza-bloqueados">
+                        <span>Bloqueados</span>
+                        <strong>{{ grupo.bloqueados }}</strong>
+                    </div>
+
+                    <div class="pizza-stat pizza-problema">
+                        <span>Problema</span>
+                        <strong>{{ grupo.problema }}</strong>
+                    </div>
+
+                    <div class="pizza-stat pizza-reservados">
+                        <span>Reservados</span>
+                        <strong>{{ grupo.reservados }}</strong>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
 
         <div class="grid">
@@ -190,23 +396,37 @@
         const labels = statusData.map(item => item.status);
         const totals = statusData.map(item => item.total);
 
+        const colorMap = {
+            disponivel: "#22c55e",
+            alocado: "#facc15",
+            bloqueado: "#ef4444",
+            problema: "#f97316",
+            reservado: "#3b82f6",
+            inconsistente: "#a855f7"
+        };
+
+        const backgroundColors = labels.map(label => colorMap[label] || "#94a3b8");
+
         new Chart(document.getElementById("statusChart"), {
             type: "doughnut",
             data: {
                 labels: labels,
                 datasets: [{
                     data: totals,
+                    backgroundColor: backgroundColors,
+                    borderColor: "#111827",
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
-                cutout: "68%",
+                maintainAspectRatio: false,
+                cutout: "65%",
                 plugins: {
                     legend: {
                         position: "bottom",
                         labels: {
+                            color: "#cbd5e1",
                             boxWidth: 12,
                             padding: 14,
                             font: {
@@ -216,6 +436,55 @@
                     }
                 }
             }
+        });
+    </script>
+
+    <script>
+        const groupCharts = document.querySelectorAll(".group-doughnut");
+
+        groupCharts.forEach((canvas) => {
+            const disponiveis = Number(canvas.dataset.disponiveis || 0);
+            const alocados = Number(canvas.dataset.alocados || 0);
+            const bloqueados = Number(canvas.dataset.bloqueados || 0);
+            const problema = Number(canvas.dataset.problema || 0);
+            const reservados = Number(canvas.dataset.reservados || 0);
+
+            new Chart(canvas, {
+                type: "doughnut",
+                data: {
+                    labels: ["Disponíveis", "Alocados", "Bloqueados", "Problema", "Reservados"],
+                    datasets: [{
+                        data: [disponiveis, alocados, bloqueados, problema, reservados],
+                        backgroundColor: [
+                            "#22c55e",
+                            "#facc15",
+                            "#ef4444",
+                            "#f97316",
+                            "#3b82f6"
+                        ],
+                        borderColor: "#111827",
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    cutout: "65%",
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                color: "#cbd5e1",
+                                boxWidth: 10,
+                                padding: 12,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         });
     </script>
 </body>

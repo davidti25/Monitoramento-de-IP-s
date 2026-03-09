@@ -116,25 +116,29 @@
         }
 
         .status-disponivel {
-            background: #e2e8f0;
-            color: #334155;
-        }
-
-        .status-alocado {
             background: #dcfce7;
             color: #166534;
         }
 
+        /* verde */
+        .status-alocado {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* amarelo */
+        .status-problema {
+            background: #fed7aa;
+            color: #c2410c;
+        }
+
+        /* laranja */
         .status-bloqueado {
             background: #fee2e2;
             color: #991b1b;
         }
 
-        .status-problema {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
+        /* vermelho */
         .status-reservado {
             background: #dbeafe;
             color: #1d4ed8;
@@ -161,6 +165,48 @@
             text-align: center;
             color: #64748b;
         }
+
+        .group-section {
+            margin-bottom: 28px;
+        }
+
+        .group-header {
+            background: #0f172a;
+            color: white;
+            padding: 16px 18px;
+            border-radius: 14px 14px 0 0;
+        }
+
+        .group-header h3 {
+            margin: 0 0 6px 0;
+            font-size: 18px;
+        }
+
+        .group-meta {
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+
+        .action-btn:hover {
+            opacity: 0.92;
+        }
+
+        .action-assign {
+            background: #16a34a;
+        }
     </style>
 </head>
 
@@ -170,9 +216,16 @@
             <strong>IPAM TEN</strong>
         </div>
         <div>
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'ip_list' %}">IPs</a>
-            <a href="{% url 'logout' %}">Sair</a>
+            <div>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                |
+                <a href="{% url 'ip_list' %}">IPs</a>
+                |
+                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-link">Sair</button>
+                </form>
+            </div>
         </div>
     </header>
 
@@ -202,70 +255,93 @@
             </form>
         </div>
 
-        <div class="table-box">
-            <table>
-                <thead>
-                    <tr>
-                        <th>IP</th>
-                        <th style="width: 120px;">Status</th>
-                        <th>Cliente</th>
-                        <th>PPPoE</th>
-                        <th>Bloco</th>
-                        <th>Observações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ip in ips %}
-                    <tr>
-                        <td>
-                            <a class="ip-link" href="{% url 'ip_detail' ip.pk %}">
-                                {{ ip.ip_address }}
-                            </a>
-                        </td>
-                        <td style="width: 120px;">
-                            <span class="status status-{{ ip.status }}">
-                                {{ ip.get_status_display }}
-                            </span>
-                        </td>
-                        <td>
-                            {% if ip.client %}
-                            {{ ip.client.nome }}
-                            {% else %}
-                            <span class="small">—</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if ip.pppoe_account %}
-                            {{ ip.pppoe_account.username }}
-                            {% else %}
-                            <span class="small">—</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if ip.block %}
-                            {{ ip.block.rede_cidr }}
-                            {% else %}
-                            <span class="small">—</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if ip.observacoes %}
-                            {{ ip.observacoes|truncatechars:50 }}
-                            {% else %}
-                            <span class="small">—</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="empty">
-                            Nenhum IP encontrado.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        {% for grupo in grupos %}
+        <div class="group-section">
+            <div class="group-header">
+                <h3>{{ grupo.titulo }}</h3>
+                <div class="group-meta">
+                    Tipo: {{ grupo.tipo }} | Cidade: {{ grupo.cidade }} | Faixa: {{ grupo.faixa }}
+                </div>
+            </div>
+
+            <div class="table-box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>IP</th>
+                            <th style="width: 120px;">Status</th>
+                            <th>Cliente</th>
+                            <th>PPPoE</th>
+                            <th>Bloco</th>
+                            <th>Observações</th>
+                            <th style="width: 140px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ip in grupo.ips %}
+                        <tr>
+                            <td>
+                                <a class="ip-link" href="{% url 'ip_detail' ip.pk %}">
+                                    {{ ip.ip_address }}
+                                </a>
+                            </td>
+                            <td style="width: 120px;">
+                                <span class="status status-{{ ip.status }}">
+                                    {{ ip.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if ip.client %}
+                                {{ ip.client.nome }}
+                                {% else %}
+                                <span class="small">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ip.pppoe_account %}
+                                {{ ip.pppoe_account.username }}
+                                {% else %}
+                                <span class="small">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ip.block %}
+                                {{ ip.block.rede_cidr }}
+                                {% else %}
+                                <span class="small">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ip.observacoes %}
+                                {{ ip.observacoes|truncatechars:50 }}
+                                {% else %}
+                                <span class="small">—</span>
+                                {% endif %}
+                            </td>
+                            <td style="width: 140px;">
+                                <a class="action-btn" href="{% url 'ip_detail' ip.pk %}">
+                                    Editar
+                                </a>
+
+                                {% if ip.status == "disponivel" %}
+                                <a class="action-btn action-assign" href="{% url 'ip_detail' ip.pk %}">
+                                    Atribuir
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="empty">
+                                Nenhum IP neste grupo.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        {% endfor %}
     </div>
 </body>
 
