@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Acesso - LocalizIP's TEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            margin: 0;
+            padding: 0;
+            color: #f8fafc;
+        }
+
+        header {
+            background: #0f172a;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logout-link {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-title {
+            margin: 0 0 20px 0;
+            font-size: 28px;
+            color: #f8fafc;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background: #111827;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        .panel h3 {
+            margin-top: 0;
+            color: #f8fafc;
+        }
+
+        .message-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            box-sizing: border-box;
+            font-size: 14px;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: left;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        th {
+            color: #94a3b8;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #1e293b;
+            color: #f8fafc;
+        }
+
+        .empty {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        ul.errorlist {
+            margin: 6px 0 0 0;
+            padding-left: 18px;
+            color: #fca5a5;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div><strong>LocalizIP's TEN</strong></div>
+        <div>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            |
+            <a href="{% url 'ip_list' %}">IPs</a>
+            |
+            <a href="{% url 'access_create' %}">Criar acesso</a>
+            |
+            <a href="{% url 'profile_view' %}">Meu perfil</a>
+            |
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-link">Sair</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}">Entrar</a>
+            |
+            <a href="{% url 'access_create' %}">Criar acesso</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Criar acesso</h1>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="{% if message.tags == 'error' %}message-error{% else %}message-success{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="grid">
+            <div class="panel">
+                <h3>Novo usuário</h3>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}">Login</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.first_name.id_for_label }}">Nome</label>
+                        {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">E-mail</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.password1.id_for_label }}">Senha</label>
+                        {{ form.password1 }}
+                        {{ form.password1.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.password2.id_for_label }}">Confirmar senha</label>
+                        {{ form.password2 }}
+                        {{ form.password2.errors }}
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn">Criar acesso</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Voltar</a>
+                    </div>
+                </form>
+            </div>
+
+            {% if mostrar_usuarios %}
+            <div class="panel">
+                <h3>Usuários cadastrados</h3>
+
+                {% if usuarios %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Login</th>
+                            <th>Nome</th>
+                            <th>Acesso</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr>
+                            <td>{{ usuario.username }}</td>
+                            <td>
+                                {% if usuario.first_name %}
+                                {{ usuario.first_name }}
+                                {% else %}
+                                —
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for grupo in usuario.groups.all %}
+                                <span class="tag">{{ grupo.name }}</span>
+                                {% empty %}
+                                <span class="tag">Sem grupo</span>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if usuario.is_active %}
+                                Ativo
+                                {% else %}
+                                Inativo
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="empty">Nenhum usuário cadastrado.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

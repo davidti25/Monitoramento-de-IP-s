@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar acesso - IPAM TEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            margin: 0;
+            padding: 0;
+            color: #f8fafc;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        .panel {
+            background: #111827;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            box-sizing: border-box;
+            font-size: 14px;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background: #475569;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <header
+        style="background:#0f172a; color:white; padding:16px 24px; display:flex; justify-content:space-between; align-items:center;">
+        <div><strong>LocalizIP's TEN</strong></div>
+        <div>
+            <a href="{% url 'dashboard' %}" style="color:white; text-decoration:none;">Dashboard</a>
+            |
+            <a href="{% url 'ip_list' %}" style="color:white; text-decoration:none;">IPs</a>
+            |
+            <a href="{% url 'access_create' %}" style="color:white; text-decoration:none;">Criar acesso</a>
+            |
+            <a href="{% url 'profile_view' %}" style="color:white; text-decoration:none;">Meu perfil</a>
+            |
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit"
+                    style="background:none; border:none; color:white; cursor:pointer; font:inherit; padding:0; margin:0;">Sair</button>
+            </form>
+        </div>
+    </header>
+    <div class="container">
+        <div class="panel">
+            <h2>Editar acesso de {{ usuario_editando.username }}</h2>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.first_name.id_for_label }}">Nome</label>
+                    {{ form.first_name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">E-mail</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.group.id_for_label }}">Perfil de acesso</label>
+                    {{ form.group }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.is_active.id_for_label }}">Usuário ativo</label>
+                    {{ form.is_active }}
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn">Salvar</button>
+                    <a href="{% url 'profile_view' %}" class="btn btn-secondary">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

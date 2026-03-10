@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Perfil - IPAM TEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            margin: 0;
+            padding: 0;
+            color: #f8fafc;
+        }
+
+        header {
+            background: #0f172a;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logout-link {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .panel {
+            background: #111827;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: left;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        th {
+            color: #94a3b8;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #1e293b;
+            color: #f8fafc;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div><strong>LocalizIP's TEN</strong></div>
+        <div>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            |
+            <a href="{% url 'ip_list' %}">IPs</a>
+           
+            |
+            <a href="{% url 'profile_view' %}">Meu perfil</a>
+            |
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-link">Sair</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}">Entrar</a>
+            |
+            <a href="{% url 'access_create' %}">Criar acesso</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Gerenciamento de acessos</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Login</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.username }}</td>
+                        <td>{% if usuario.first_name %}{{ usuario.first_name }}{% else %}—{% endif %}</td>
+                        <td>{% if usuario.email %}{{ usuario.email }}{% else %}—{% endif %}</td>
+                        <td>
+                            {% for grupo in usuario.groups.all %}
+                            <span class="tag">{{ grupo.name }}</span>
+                            {% empty %}
+                            <span class="tag">Sem grupo</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if usuario.is_active %}Ativo{% else %}Inativo{% endif %}
+                        </td>
+                        <td>
+                            <a class="btn" href="{% url 'update_user_access' usuario.id %}">Editar acesso</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

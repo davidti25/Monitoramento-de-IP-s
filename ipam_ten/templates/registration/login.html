@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <title>Login - IPAM TEN</title>
+    <title>Login - LocalizIP's TEN</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -15,21 +16,38 @@
             min-height: 100vh;
             margin: 0;
         }
+
         .box {
             background: #1e293b;
             padding: 30px;
             border-radius: 12px;
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
         }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
         input {
             width: 100%;
             padding: 12px;
-            margin-top: 10px;
+            margin-top: 4px;
             margin-bottom: 15px;
             border-radius: 8px;
             border: none;
+            box-sizing: border-box;
         }
+
         button {
             width: 100%;
             padding: 12px;
@@ -38,22 +56,75 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-weight: 600;
         }
-        h2 {
-            margin-top: 0;
+
+        .secondary-link {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
             text-align: center;
+            padding: 12px;
+            margin-top: 12px;
+            background: #475569;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .help-text {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #cbd5e1;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .errorlist {
+            color: #fecaca;
+            font-size: 13px;
+            padding-left: 18px;
+            margin-top: -8px;
+            margin-bottom: 12px;
+        }
+
+        .field-group {
+            margin-bottom: 12px;
         }
     </style>
 </head>
+
 <body>
     <div class="box">
-        <h2>IPAM TEN</h2>
+        <h2>LocalizIP's TEN</h2>
+
         <form method="post">
             {% csrf_token %}
-            {{ form.username }}
-            {{ form.password }}
+
+            <div class="field-group">
+                <label for="{{ form.username.id_for_label }}">Usuário</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+
+            <div class="field-group">
+                <label for="{{ form.password.id_for_label }}">Senha</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+
             <button type="submit">Entrar</button>
         </form>
+
+        <a class="secondary-link" href="{% url 'access_create' %}">
+            Criar acesso
+        </a>
+
+        <div class="help-text">
+            O cadastro de acessos continua protegido para administrador.
+        </div>
     </div>
 </body>
+
 </html>

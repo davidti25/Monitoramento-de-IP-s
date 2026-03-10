@@ -216,21 +216,47 @@
             color: #64748b;
             font-size: 13px;
         }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logout-link {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+            padding: 0;
+            margin: 0;
+        }
     </style>
 </head>
 
 <body>
     <header>
-        <div><strong>IPAM TEN</strong></div>
+        <div><strong>LocalizIP's TEN</strong></div>
         <div>
-            <div>
-                <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="{% url 'ip_list' %}">IPs</a>
-                <form method="post" action="{% url 'logout' %}" class="logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-link">Sair</button>
-                </form>
-            </div>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            |
+            <a href="{% url 'ip_list' %}">IPs</a>
+            
+            |
+            <a href="{% url 'profile_view' %}">Meu perfil</a>
+            |
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-link">Sair</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}">Entrar</a>
+            |
+            <a href="{% url 'access_create' %}">Criar acesso</a>
+            {% endif %}
         </div>
     </header>
 

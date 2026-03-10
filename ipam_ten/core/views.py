@@ -4,8 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
-from .forms import PublicIPForm, AccessUserCreationForm
-from django.contrib.auth.models import Group
+from .forms import PublicIPForm, AccessUserCreationForm, UserAccessUpdateForm
+from django.contrib.auth.models import Group, User
 from .forms import PublicIPForm
 from .models import AuditLog, PublicIP
 
@@ -235,31 +235,64 @@ def ensure_default_access_groups():
     Group.objects.get_or_create(name="Consulta")
 
 
-@login_required
 def access_create(request):
-    if not request.user.is_superuser:
-        messages.error(request, "Você não tem permissão para acessar essa área.")
-        return redirect("dashboard")
-
     ensure_default_access_groups()
 
     if request.method == "POST":
         form = AccessUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Acesso criado com sucesso.")
-            return redirect("access_create")
+            messages.success(request, "Acesso criado com sucesso. Aguarde liberação do perfil pelo administrador.")
+            return redirect("login")
     else:
         form = AccessUserCreationForm()
 
-    usuarios = (
-        Group.user_set.model.objects.all()
-        .prefetch_related("groups")
-        .order_by("username")
-    )
+    usuarios = User.objects.all().prefetch_related("groups").order_by("username")
 
     context = {
         "form": form,
         "usuarios": usuarios,
+        "mostrar_usuarios": request.user.is_authenticated and request.user.is_superuser,
     }
     return render(request, "core/access_create.html", context)
+
+@login_required
+def profile_view(request):
+    if not request.user.is_superuser:
+        messages.error(request, "Você não tem permissão para acessar essa área.")
+        return redirect("dashboard")
+
+    ensure_default_access_groups()
+
+    usuarios = User.objects.all().prefetch_related("groups").order_by("username")
+
+    context = {
+        "usuarios": usuarios,
+    }
+    return render(request, "core/profile.html", context)
+
+
+@login_required
+def update_user_access(request, user_id):
+    if not request.user.is_superuser:
+        messages.error(request, "Você não tem permissão para alterar acessos.")
+        return redirect("dashboard")
+
+    ensure_default_access_groups()
+
+    usuario = get_object_or_404(User, pk=user_id)
+
+    if request.method == "POST":
+        form = UserAccessUpdateForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Acesso do usuário {usuario.username} atualizado com sucesso.")
+            return redirect("profile_view")
+    else:
+        form = UserAccessUpdateForm(instance=usuario)
+
+    context = {
+        "usuario_editando": usuario,
+        "form": form,
+    }
+    return render(request, "core/user_access_edit.html", context)

@@ -1,63 +1,9 @@
 from django import forms
-from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User, Group
 
+from .models import Client, PPPoEAccount, PublicIP
 
-class AccessUserCreationForm(UserCreationForm):
-    first_name = forms.CharField(
-        label="Nome",
-        required=False,
-        widget=forms.TextInput(attrs={
-            "placeholder": "Digite o nome do usuário"
-        })
-    )
-
-    email = forms.EmailField(
-        label="E-mail",
-        required=False,
-        widget=forms.EmailInput(attrs={
-            "placeholder": "Digite o e-mail"
-        })
-    )
-
-    group = forms.ModelChoiceField(
-        label="Nível de acesso",
-        queryset=Group.objects.all(),
-        required=False,
-        empty_label="Selecione o nível"
-    )
-
-    class Meta:
-        model = User
-        fields = [
-            "username",
-            "first_name",
-            "email",
-            "password1",
-            "password2",
-            "group",
-        ]
-        widgets = {
-            "username": forms.TextInput(attrs={
-                "placeholder": "Digite o login"
-            }),
-        }
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.first_name = self.cleaned_data.get("first_name", "")
-        user.email = self.cleaned_data.get("email", "")
-        user.is_active = True
-
-        if commit:
-            user.save()
-
-            group = self.cleaned_data.get("group")
-            if group:
-                user.groups.clear()
-                user.groups.add(group)
-
-        return user
 
 class PublicIPForm(forms.ModelForm):
     client_name = forms.CharField(
@@ -135,3 +81,96 @@ class PublicIPForm(forms.ModelForm):
             instance.save()
 
         return instance
+
+
+class AccessUserCreationForm(UserCreationForm):
+    first_name = forms.CharField(
+        label="Nome",
+        required=False,
+        widget=forms.TextInput(attrs={
+            "placeholder": "Digite o nome do usuário"
+        })
+    )
+
+    email = forms.EmailField(
+        label="E-mail",
+        required=False,
+        widget=forms.EmailInput(attrs={
+            "placeholder": "Digite o e-mail"
+        })
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "first_name",
+            "email",
+            "password1",
+            "password2",
+        ]
+        widgets = {
+            "username": forms.TextInput(attrs={
+                "placeholder": "Digite o login"
+            }),
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.first_name = self.cleaned_data.get("first_name", "")
+        user.email = self.cleaned_data.get("email", "")
+        user.is_active = True
+
+        if commit:
+            user.save()
+
+            grupo_consulta, _ = Group.objects.get_or_create(name="Consulta")
+            user.groups.clear()
+            user.groups.add(grupo_consulta)
+
+        return user
+     
+class UserAccessUpdateForm(forms.ModelForm):
+    group = forms.ModelChoiceField(
+        label="Perfil de acesso",
+        queryset=Group.objects.all(),
+        required=False,
+        empty_label="Selecione o perfil"
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "email",
+            "is_active",
+        ]
+        widgets = {
+            "first_name": forms.TextInput(attrs={
+                "placeholder": "Nome do usuário"
+            }),
+            "email": forms.EmailInput(attrs={
+                "placeholder": "E-mail"
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            grupo_atual = self.instance.groups.first()
+            if grupo_atual:
+                self.fields["group"].initial = grupo_atual
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        if commit:
+            user.save()
+
+            grupo = self.cleaned_data.get("group")
+            user.groups.clear()
+            if grupo:
+                user.groups.add(grupo)
+
+        return user 
