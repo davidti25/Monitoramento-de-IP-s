@@ -269,7 +269,7 @@
                 <select name="status">
                     <option value="">Todos os status</option>
                     {% for value, label in status_choices %}
-                    <option value="{{ value }}" {% if status==value %}selected{% endif %}>
+                    <option value="{{ value }}" {% if status == value %}selected{% endif %}>
                         {{ label }}
                     </option>
                     {% endfor %}
